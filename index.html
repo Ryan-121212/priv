@@ -1,432 +1,503 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#090d18">
-<meta name="description" content="GhostBrowser privacy-focused search">
-<title>GhostBrowser 👻</title>
+import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-<style>
-* {
-  box-sizing: border-box;
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const GhostBrowser());
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: #090d18;
-  color: #f1f5f9;
-  font-family: Arial, sans-serif;
-}
+class GhostBrowser extends StatelessWidget {
+  const GhostBrowser({super.key});
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 6%;
-  border-bottom: 1px solid #263247;
-}
-
-.brand {
-  font-size: 21px;
-  font-weight: bold;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  border-radius: 9px;
-  padding: 12px 16px;
-  font-weight: bold;
-}
-
-.panic {
-  background: #7f1d1d;
-  color: white;
-}
-
-main {
-  width: min(650px, 92%);
-  margin: 55px auto;
-}
-
-.hero {
-  text-align: center;
-}
-
-.ghost {
-  font-size: 55px;
-}
-
-h1 {
-  font-size: clamp(36px, 8vw, 52px);
-  margin-bottom: 8px;
-}
-
-.subtitle {
-  color: #94a3b8;
-}
-
-.status {
-  display: inline-block;
-  padding: 10px 16px;
-  margin: 20px 0;
-  background: #132c25;
-  color: #86efac;
-  border-radius: 30px;
-  font-size: 13px;
-}
-
-form {
-  display: flex;
-  gap: 10px;
-}
-
-input {
-  flex: 1;
-  min-width: 0;
-  padding: 17px;
-  background: #151e2e;
-  border: 1px solid #334155;
-  border-radius: 12px;
-  color: white;
-  font-size: 16px;
-}
-
-input:focus {
-  outline: 2px solid #3b82f6;
-}
-
-.search-button {
-  background: #2563eb;
-  color: white;
-}
-
-.engine {
-  color: #64748b;
-  font-size: 12px;
-  margin-top: 12px;
-}
-
-.actions {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 22px;
-}
-
-.actions button {
-  background: #1e293b;
-  color: white;
-}
-
-.panel {
-  background: #111827;
-  border: 1px solid #263247;
-  padding: 22px;
-  border-radius: 15px;
-  margin-top: 35px;
-}
-
-h2 {
-  font-size: 18px;
-  margin-top: 0;
-}
-
-.setting {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 15px 0;
-  border-bottom: 1px solid #263247;
-}
-
-.setting:last-child {
-  border: none;
-}
-
-.setting p {
-  color: #94a3b8;
-  font-size: 12px;
-  margin: 5px 0 0;
-}
-
-.enabled {
-  color: #4ade80;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.tab {
-  background: #253247;
-  color: white;
-}
-
-.tab.active {
-  background: #2563eb;
-}
-
-.empty {
-  color: #94a3b8;
-  font-size: 13px;
-}
-
-.notice {
-  background: #171d2b;
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 35px;
-  color: #94a3b8;
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-footer {
-  text-align: center;
-  color: #64748b;
-  padding: 30px;
-  font-size: 12px;
-}
-
-@media(max-width:480px) {
-  header {
-    padding: 16px 4%;
-  }
-
-  .brand {
-    font-size: 17px;
-  }
-
-  .panic {
-    font-size: 11px;
-  }
-
-  main {
-    margin-top: 35px;
-  }
-
-  form {
-    flex-direction: column;
-  }
-
-  .search-button {
-    padding: 15px;
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'GhostBrowser',
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF090D18),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      home: const BrowserHome(),
+    );
   }
 }
-</style>
-</head>
 
-<body>
+class BrowserTab {
+  BrowserTab(this.id);
 
-<header>
-  <div class="brand">👻 GhostBrowser</div>
-  <button class="panic" id="panic">✕ Clear session</button>
-</header>
+  final int id;
+  final GlobalKey<BrowserPaneState> key =
+      GlobalKey<BrowserPaneState>();
+}
 
-<main>
+class BrowserHome extends StatefulWidget {
+  const BrowserHome({super.key});
 
-<section class="hero">
-  <div class="ghost">👻</div>
+  @override
+  State<BrowserHome> createState() => _BrowserHomeState();
+}
 
-  <h1>Browse freely.</h1>
-  <p class="subtitle">Your search starts here.</p>
+class _BrowserHomeState extends State<BrowserHome> {
+  final address = TextEditingController();
 
-  <div class="status">
-    🟢 Privacy-focused mode
-  </div>
+  final List<BrowserTab> tabs = [];
 
-  <form id="searchForm">
-    <input
-      id="searchInput"
-      type="search"
-      placeholder="Search anything..."
-      autocomplete="off"
-      spellcheck="false"
-      required
-    >
+  int active = 0;
+  int nextId = 0;
 
-    <button class="search-button" type="submit">
-      Search
-    </button>
-  </form>
+  bool trackerBlocking = true;
 
-  <p class="engine">Powered by DuckDuckGo</p>
-
-  <div class="actions">
-    <button id="newTab">＋ New search tab</button>
-    <button id="clearInput">Clear search</button>
-  </div>
-</section>
-
-<section class="panel">
-  <h2>🛡️ Privacy dashboard</h2>
-
-  <div class="setting">
-    <div>
-      <strong>App search storage</strong>
-      <p>Searches aren't saved by this app</p>
-    </div>
-    <span class="enabled">OFF</span>
-  </div>
-
-  <div class="setting">
-    <div>
-      <strong>Analytics</strong>
-      <p>No analytics scripts included</p>
-    </div>
-    <span class="enabled">OFF</span>
-  </div>
-
-  <div class="setting">
-    <div>
-      <strong>External tracking protection</strong>
-      <p>DuckDuckGo privacy features apply</p>
-    </div>
-    <span class="enabled">LIMITED</span>
-  </div>
-
-  <div class="setting">
-    <div>
-      <strong>Session tabs</strong>
-      <p>Temporary search labels</p>
-    </div>
-    <span class="enabled">ON</span>
-  </div>
-</section>
-
-<section class="panel">
-  <h2>🗂️ Your search tabs</h2>
-  <div class="tabs" id="tabs">
-    <p class="empty">No active search tabs.</p>
-  </div>
-</section>
-
-<section class="notice">
-  <strong>🔒 Privacy reminder</strong>
-  <p>
-    GhostBrowser doesn't store searches in its own
-    persistent application storage. Your browser,
-    internet provider, search engine and websites
-    may still process or retain activity.
-    This app does not provide complete anonymity
-    or system-wide tracker blocking.
-  </p>
-</section>
-
-</main>
-
-<footer>
-  GhostBrowser · Built for privacy 👻
-</footer>
-
-<script>
-const input = document.getElementById("searchInput");
-const form = document.getElementById("searchForm");
-const tabsContainer = document.getElementById("tabs");
-
-let tabs = [];
-let activeTab = null;
-let nextTab = 1;
-
-function renderTabs() {
-  tabsContainer.replaceChildren();
-
-  if (tabs.length === 0) {
-    const empty = document.createElement("p");
-    empty.className = "empty";
-    empty.textContent = "No active search tabs.";
-    tabsContainer.appendChild(empty);
-    return;
+  @override
+  void initState() {
+    super.initState();
+    addTab();
   }
 
-  tabs.forEach(tab => {
-    const button = document.createElement("button");
+  @override
+  void dispose() {
+    address.dispose();
+    super.dispose();
+  }
 
-    button.className =
-      "tab" + (tab.id === activeTab ? " active" : "");
+  BrowserTab get currentTab => tabs[active];
 
-    button.textContent = tab.name;
+  void addTab() {
+    setState(() {
+      tabs.add(BrowserTab(nextId++));
+      active = tabs.length - 1;
+    });
+    address.clear();
+  }
 
-    button.addEventListener("click", () => {
-      activeTab = tab.id;
-      renderTabs();
-      input.focus();
+  void selectTab(int index) {
+    setState(() => active = index);
+    address.text =
+        tabs[index].key.currentState?.currentUrl ?? '';
+  }
+
+  void closeTab(int index) async {
+    if (tabs.length == 1) {
+      await panic();
+      return;
+    }
+
+    await tabs[index].key.currentState?.clearData();
+
+    setState(() {
+      tabs.removeAt(index);
+      if (active >= tabs.length) {
+        active = tabs.length - 1;
+      } else if (active > index) {
+        active--;
+      }
     });
 
-    tabsContainer.appendChild(button);
-  });
-}
-
-function createTab() {
-  const tab = {
-    id: nextTab++,
-    name: "Search " + nextTab
-  };
-
-  tabs.push(tab);
-  activeTab = tab.id;
-  renderTabs();
-}
-
-form.addEventListener("submit", event => {
-  event.preventDefault();
-
-  const query = input.value.trim();
-
-  if (!query) return;
-
-  if (!activeTab) createTab();
-
-  const url =
-    "https://duckduckgo.com/?q=" +
-    encodeURIComponent(query);
-
-  window.open(url, "_blank", "noopener,noreferrer");
-
-  input.value = "";
-});
-
-document.getElementById("newTab")
-.addEventListener("click", () => {
-  createTab();
-  input.focus();
-});
-
-document.getElementById("clearInput")
-.addEventListener("click", () => {
-  input.value = "";
-  input.focus();
-});
-
-document.getElementById("panic")
-.addEventListener("click", () => {
-  input.value = "";
-  tabs = [];
-  activeTab = null;
-
-  renderTabs();
-
-  try {
-    sessionStorage.clear();
-  } catch (error) {
-    console.warn("Could not clear session storage.");
+    address.text =
+        currentTab.key.currentState?.currentUrl ?? '';
   }
 
-  input.focus();
-});
+  String getUrl(String text) {
+    text = text.trim();
 
-renderTabs();
-</script>
+    if (text.isEmpty) {
+      return 'https://duckduckgo.com/';
+    }
 
-</body>
-</html>
+    final uri = Uri.tryParse(text);
+
+    if (uri != null &&
+        uri.scheme == 'https' &&
+        uri.host.isNotEmpty) {
+      return uri.toString();
+    }
+
+    if (uri != null &&
+        uri.scheme == 'http' &&
+        uri.host.isNotEmpty) {
+      return 'https://${uri.host}${uri.hasPort ? ':${uri.port}' : ''}${uri.path}${uri.hasQuery ? '?${uri.query}' : ''}';
+    }
+
+    if (!text.contains(' ') && text.contains('.')) {
+      return 'https://$text';
+    }
+
+    return 'https://duckduckgo.com/?q=${Uri.encodeComponent(text)}';
+  }
+
+  void search() {
+    if (address.text.trim().isEmpty) return;
+    currentTab.key.currentState?.navigate(
+      getUrl(address.text),
+    );
+  }
+
+  Future<void> panic() async {
+    for (final tab in tabs) {
+      await tab.key.currentState?.clearData();
+    }
+
+    setState(() {
+      tabs.clear();
+      active = 0;
+    });
+
+    address.clear();
+    addTab();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF111827),
+        title: const Text(
+          '👻 GhostBrowser',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          IconButton(
+            tooltip: 'Privacy',
+            onPressed: privacySettings,
+            icon: const Icon(Icons.shield_outlined),
+          ),
+          IconButton(
+            tooltip: 'Panic button',
+            onPressed: panic,
+            icon: const Icon(Icons.delete_forever),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: address,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      keyboardType: TextInputType.url,
+                      textInputAction: TextInputAction.go,
+                      decoration: InputDecoration(
+                        hintText: 'Search anything...',
+                        prefixIcon: const Icon(Icons.search),
+                        filled: true,
+                        fillColor: const Color(0xFF192338),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      onSubmitted: (_) => search(),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton.filled(
+                    onPressed: search,
+                    icon: const Icon(Icons.arrow_forward),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(
+              height: 48,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: tabs.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(3),
+                          child: GestureDetector(
+                            onTap: () => selectTab(index),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: active == index
+                                    ? Colors.blue
+                                    : const Color(0xFF192338),
+                                borderRadius:
+                                    BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text('Tab ${index + 1}'),
+                                  const SizedBox(width: 5),
+                                  GestureDetector(
+                                    onTap: () => closeTab(index),
+                                    child: const Icon(
+                                      Icons.close,
+                                      size: 15,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: addTab,
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
+              ),
+            ),
+
+            Expanded(
+              child: IndexedStack(
+                index: active,
+                children: [
+                  for (final tab in tabs)
+                    BrowserPane(
+                      key: tab.key,
+                      trackerBlocking: trackerBlocking,
+                      onUrlChanged: (url) {
+                        if (tab.id == currentTab.id) {
+                          address.text = url;
+                        }
+                      },
+                    ),
+                ],
+              ),
+            ),
+
+            Container(
+              color: const Color(0xFF111827),
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    onPressed: () =>
+                        currentTab.key.currentState?.goBack(),
+                    icon: const Icon(Icons.arrow_back),
+                  ),
+                  IconButton(
+                    onPressed: () =>
+                        currentTab.key.currentState?.goForward(),
+                    icon: const Icon(Icons.arrow_forward),
+                  ),
+                  IconButton(
+                    onPressed: () =>
+                        currentTab.key.currentState?.reload(),
+                    icon: const Icon(Icons.refresh),
+                  ),
+                  IconButton(
+                    onPressed: addTab,
+                    icon: const Icon(Icons.add_box_outlined),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void privacySettings() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF111827),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, updateSheet) {
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    '🛡️ Privacy settings',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SwitchListTile(
+                    title: const Text('Tracker blocking'),
+                    subtitle: const Text(
+                      'Basic advertising domain filters',
+                    ),
+                    value: trackerBlocking,
+                    onChanged: (value) {
+                      setState(() => trackerBlocking = value);
+                      updateSheet(() {});
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.delete_forever),
+                    title: const Text('Clear session'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      panic();
+                    },
+                  ),
+                  const Text(
+                    'Websites and network providers may still '
+                    'observe your connections. No VPN or '
+                    'complete anonymity is included.',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class BrowserPane extends StatefulWidget {
+  const BrowserPane({
+    super.key,
+    required this.trackerBlocking,
+    required this.onUrlChanged,
+  });
+
+  final bool trackerBlocking;
+  final ValueChanged<String> onUrlChanged;
+
+  @override
+  State<BrowserPane> createState() => BrowserPaneState();
+}
+
+class BrowserPaneState extends State<BrowserPane> {
+  InAppWebViewController? controller;
+
+  String currentUrl = 'https://duckduckgo.com/';
+
+  final blocked = [
+    '.*doubleclick\\.net.*',
+    '.*googlesyndication\\.com.*',
+    '.*google-analytics\\.com.*',
+    '.*googletagmanager\\.com.*',
+    '.*adservice\\.google\\..*',
+    '.*adnxs\\.com.*',
+    '.*scorecardresearch\\.com.*',
+    '.*quantserve\\.com.*',
+    '.*outbrain\\.com.*',
+    '.*taboola\\.com.*',
+  ];
+
+  List<ContentBlocker> get rules {
+    if (!widget.trackerBlocking) return [];
+
+    return blocked.map((domain) {
+      return ContentBlocker(
+        trigger: ContentBlockerTrigger(urlFilter: domain),
+        action: ContentBlockerAction(
+          type: ContentBlockerActionType.BLOCK,
+        ),
+      );
+    }).toList();
+  }
+
+  void navigate(String url) {
+    controller?.loadUrl(
+      urlRequest: URLRequest(url: WebUri(url)),
+    );
+  }
+
+  Future<void> goBack() async {
+    if (await controller?.canGoBack() ?? false) {
+      await controller?.goBack();
+    }
+  }
+
+  Future<void> goForward() async {
+    if (await controller?.canGoForward() ?? false) {
+      await controller?.goForward();
+    }
+  }
+
+  void reload() => controller?.reload();
+
+  Future<void> clearData() async {
+    await controller?.clearCache();
+    await CookieManager.instance().deleteAllCookies();
+    await controller?.loadUrl(
+      urlRequest: URLRequest(url: WebUri('about:blank')),
+    );
+    currentUrl = '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InAppWebView(
+      initialUrlRequest: URLRequest(
+        url: WebUri('https://duckduckgo.com/'),
+      ),
+      initialSettings: InAppWebViewSettings(
+        incognito: true,
+        cacheEnabled: false,
+        clearCache: true,
+        thirdPartyCookiesEnabled: false,
+        javaScriptCanOpenWindowsAutomatically: false,
+        supportMultipleWindows: false,
+        useShouldOverrideUrlLoading: true,
+        allowsBackForwardNavigationGestures: true,
+        isInspectable: false,
+        contentBlockers: rules,
+      ),
+      onWebViewCreated: (webController) {
+        controller = webController;
+      },
+      onLoadStart: (controller, url) {
+        if (url != null) {
+          currentUrl = url.toString();
+          widget.onUrlChanged(currentUrl);
+        }
+      },
+      onUpdateVisitedHistory: (controller, url, reload) {
+        if (url != null) {
+          currentUrl = url.toString();
+          widget.onUrlChanged(currentUrl);
+        }
+      },
+      onPermissionRequest: (controller, request) async {
+        return PermissionResponse(
+          resources: request.resources,
+          action: PermissionResponseAction.DENY,
+        );
+      },
+      shouldOverrideUrlLoading: (controller, action) async {
+        final uri = action.request.url;
+
+        if (uri != null && uri.scheme == 'https') {
+          return NavigationActionPolicy.ALLOW;
+        }
+
+        return NavigationActionPolicy.CANCEL;
+      },
+      onLoadStop: (controller, url) {
+        if (url != null) {
+          currentUrl = url.toString();
+          widget.onUrlChanged(currentUrl);
+        }
+      },
+    );
+  }
+}
+
