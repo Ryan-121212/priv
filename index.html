@@ -1,0 +1,432 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090d18">
+<meta name="description" content="GhostBrowser privacy-focused search">
+<title>GhostBrowser 👻</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #090d18;
+  color: #f1f5f9;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 6%;
+  border-bottom: 1px solid #263247;
+}
+
+.brand {
+  font-size: 21px;
+  font-weight: bold;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 9px;
+  padding: 12px 16px;
+  font-weight: bold;
+}
+
+.panic {
+  background: #7f1d1d;
+  color: white;
+}
+
+main {
+  width: min(650px, 92%);
+  margin: 55px auto;
+}
+
+.hero {
+  text-align: center;
+}
+
+.ghost {
+  font-size: 55px;
+}
+
+h1 {
+  font-size: clamp(36px, 8vw, 52px);
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.status {
+  display: inline-block;
+  padding: 10px 16px;
+  margin: 20px 0;
+  background: #132c25;
+  color: #86efac;
+  border-radius: 30px;
+  font-size: 13px;
+}
+
+form {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 17px;
+  background: #151e2e;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+}
+
+input:focus {
+  outline: 2px solid #3b82f6;
+}
+
+.search-button {
+  background: #2563eb;
+  color: white;
+}
+
+.engine {
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+.actions button {
+  background: #1e293b;
+  color: white;
+}
+
+.panel {
+  background: #111827;
+  border: 1px solid #263247;
+  padding: 22px;
+  border-radius: 15px;
+  margin-top: 35px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-top: 0;
+}
+
+.setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 0;
+  border-bottom: 1px solid #263247;
+}
+
+.setting:last-child {
+  border: none;
+}
+
+.setting p {
+  color: #94a3b8;
+  font-size: 12px;
+  margin: 5px 0 0;
+}
+
+.enabled {
+  color: #4ade80;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tab {
+  background: #253247;
+  color: white;
+}
+
+.tab.active {
+  background: #2563eb;
+}
+
+.empty {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.notice {
+  background: #171d2b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 35px;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+footer {
+  text-align: center;
+  color: #64748b;
+  padding: 30px;
+  font-size: 12px;
+}
+
+@media(max-width:480px) {
+  header {
+    padding: 16px 4%;
+  }
+
+  .brand {
+    font-size: 17px;
+  }
+
+  .panic {
+    font-size: 11px;
+  }
+
+  main {
+    margin-top: 35px;
+  }
+
+  form {
+    flex-direction: column;
+  }
+
+  .search-button {
+    padding: 15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">👻 GhostBrowser</div>
+  <button class="panic" id="panic">✕ Clear session</button>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="ghost">👻</div>
+
+  <h1>Browse freely.</h1>
+  <p class="subtitle">Your search starts here.</p>
+
+  <div class="status">
+    🟢 Privacy-focused mode
+  </div>
+
+  <form id="searchForm">
+    <input
+      id="searchInput"
+      type="search"
+      placeholder="Search anything..."
+      autocomplete="off"
+      spellcheck="false"
+      required
+    >
+
+    <button class="search-button" type="submit">
+      Search
+    </button>
+  </form>
+
+  <p class="engine">Powered by DuckDuckGo</p>
+
+  <div class="actions">
+    <button id="newTab">＋ New search tab</button>
+    <button id="clearInput">Clear search</button>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>🛡️ Privacy dashboard</h2>
+
+  <div class="setting">
+    <div>
+      <strong>App search storage</strong>
+      <p>Searches aren't saved by this app</p>
+    </div>
+    <span class="enabled">OFF</span>
+  </div>
+
+  <div class="setting">
+    <div>
+      <strong>Analytics</strong>
+      <p>No analytics scripts included</p>
+    </div>
+    <span class="enabled">OFF</span>
+  </div>
+
+  <div class="setting">
+    <div>
+      <strong>External tracking protection</strong>
+      <p>DuckDuckGo privacy features apply</p>
+    </div>
+    <span class="enabled">LIMITED</span>
+  </div>
+
+  <div class="setting">
+    <div>
+      <strong>Session tabs</strong>
+      <p>Temporary search labels</p>
+    </div>
+    <span class="enabled">ON</span>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>🗂️ Your search tabs</h2>
+  <div class="tabs" id="tabs">
+    <p class="empty">No active search tabs.</p>
+  </div>
+</section>
+
+<section class="notice">
+  <strong>🔒 Privacy reminder</strong>
+  <p>
+    GhostBrowser doesn't store searches in its own
+    persistent application storage. Your browser,
+    internet provider, search engine and websites
+    may still process or retain activity.
+    This app does not provide complete anonymity
+    or system-wide tracker blocking.
+  </p>
+</section>
+
+</main>
+
+<footer>
+  GhostBrowser · Built for privacy 👻
+</footer>
+
+<script>
+const input = document.getElementById("searchInput");
+const form = document.getElementById("searchForm");
+const tabsContainer = document.getElementById("tabs");
+
+let tabs = [];
+let activeTab = null;
+let nextTab = 1;
+
+function renderTabs() {
+  tabsContainer.replaceChildren();
+
+  if (tabs.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "empty";
+    empty.textContent = "No active search tabs.";
+    tabsContainer.appendChild(empty);
+    return;
+  }
+
+  tabs.forEach(tab => {
+    const button = document.createElement("button");
+
+    button.className =
+      "tab" + (tab.id === activeTab ? " active" : "");
+
+    button.textContent = tab.name;
+
+    button.addEventListener("click", () => {
+      activeTab = tab.id;
+      renderTabs();
+      input.focus();
+    });
+
+    tabsContainer.appendChild(button);
+  });
+}
+
+function createTab() {
+  const tab = {
+    id: nextTab++,
+    name: "Search " + nextTab
+  };
+
+  tabs.push(tab);
+  activeTab = tab.id;
+  renderTabs();
+}
+
+form.addEventListener("submit", event => {
+  event.preventDefault();
+
+  const query = input.value.trim();
+
+  if (!query) return;
+
+  if (!activeTab) createTab();
+
+  const url =
+    "https://duckduckgo.com/?q=" +
+    encodeURIComponent(query);
+
+  window.open(url, "_blank", "noopener,noreferrer");
+
+  input.value = "";
+});
+
+document.getElementById("newTab")
+.addEventListener("click", () => {
+  createTab();
+  input.focus();
+});
+
+document.getElementById("clearInput")
+.addEventListener("click", () => {
+  input.value = "";
+  input.focus();
+});
+
+document.getElementById("panic")
+.addEventListener("click", () => {
+  input.value = "";
+  tabs = [];
+  activeTab = null;
+
+  renderTabs();
+
+  try {
+    sessionStorage.clear();
+  } catch (error) {
+    console.warn("Could not clear session storage.");
+  }
+
+  input.focus();
+});
+
+renderTabs();
+</script>
+
+</body>
+</html>
